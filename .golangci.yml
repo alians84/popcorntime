@@ -1,1 +1,60 @@
+run:
+  timeout: 5m
+  modules-download-mode: readonly
 
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  # Настройки для конкретных линтеров
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  govet:
+    check-shadowing: true
+    enable: ["shadow"]
+  staticcheck:
+    go: "1.21"
+    checks: ["all", "-ST1003", "-ST1000"] # Исключаем некоторые стилистические проверки
+  gosec:
+    excludes:
+      - "G104" # Игнорируем "Errors unhandled" (иногда это нужно)
+  gocritic:
+    disabled-checks:
+      - "hugeParam" # Игнорируем предупреждения о больших параметрах
+
+linters:
+  disable-all: true
+  enable:
+    # Основные линтеры
+    - errcheck
+    - govet
+    - staticcheck
+    - gosec
+    - gocritic
+    - goimports
+    - revive
+    - ineffassign
+    - unused
+    - typecheck
+    - bodyclose
+
+issues:
+  exclude-rules:
+    # Игнорируем некоторые ошибки в тестах
+    - path: _test\.go
+      linters:
+        - errcheck
+    # Игнорируем переменные, которые могут быть полезны в будущем
+    - text: "unused"
+      linters:
+        - unused
+      source: "^//go:generate"
+
+# Опционально: игнорируем некоторые файлы/директории
+skip-dirs:
+  - vendor
+  - .git
+  - .idea
