@@ -1,0 +1,238 @@
+basePath: /
+definitions:
+  popcorntime-project_internal_models.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  popcorntime-project_internal_models.ErrorResponse:
+    properties:
+      details:
+        example: invalid character '}' looking for beginning of value
+        type: string
+      error:
+        example: Invalid request body
+        type: string
+    type: object
+  popcorntime-project_internal_models.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  popcorntime-project_internal_models.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  popcorntime-project_internal_models.Role:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+    type: object
+  popcorntime-project_internal_models.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/popcorntime-project_internal_models.UserResponse'
+    type: object
+  popcorntime-project_internal_models.User:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      role:
+        $ref: '#/definitions/popcorntime-project_internal_models.Role'
+      role_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  popcorntime-project_internal_models.UserResponse:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      role:
+        $ref: '#/definitions/popcorntime-project_internal_models.Role'
+      username:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: API для синхронизированного просмотра видео
+  title: PopcornTime API
+  version: "1.0"
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Вход в систему по email и паролю
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/popcorntime-project_internal_models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная аутентификация
+          schema:
+            $ref: '#/definitions/popcorntime-project_internal_models.TokenResponse'
+        "400":
+          description: Неверный формат запроса
+          schema:
+            $ref: '#/definitions/popcorntime-project_internal_models.ErrorResponse'
+        "401":
+          description: Неверные учетные данные
+          schema:
+            $ref: '#/definitions/popcorntime-project_internal_models.ErrorResponse'
+        "500":
+          description: Ошибка сервера
+          schema:
+            $ref: '#/definitions/popcorntime-project_internal_models.ErrorResponse'
+      summary: Аутентификация пользователя
+      tags:
+      - Auth
+  /api/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Получение новой пары access/refresh токенов
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/popcorntime-project_internal_models.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/popcorntime-project_internal_models.TokenResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновление токенов
+      tags:
+      - Auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Создание нового аккаунта
+      parameters:
+      - description: Данные регистрации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/popcorntime-project_internal_models.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/popcorntime-project_internal_models.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Регистрация пользователя
+      tags:
+      - Auth
+  /api/health:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Проверка здоровья сервера
+  /api/users/{id}:
+    get:
+      description: Получить информацию о пользователе по ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/popcorntime-project_internal_models.User'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить пользователя
+      tags:
+      - Users
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
