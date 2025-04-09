@@ -11,7 +11,7 @@ RUN go install github.com/swaggo/swag/cmd/swag@latest
 COPY . .
 
 # Генерируем Swagger-документацию
-RUN swag init -g main.go --output docs
+RUN swag init -g cmd/main.go --output docs  --parseDependency --parseInternal --parseDepth 2
 
 # Собираем приложение
 RUN CGO_ENABLED=0 GOOS=linux go build -o /popcorntime
