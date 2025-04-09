@@ -29,7 +29,7 @@ WORKDIR /app
 
 # Копируем бинарник и необходимые файлы
 COPY --from=builder /popcorntime .
-COPY --from=builder /app/config ./config
+COPY --from=builder /app/internal/config ./config
 COPY --from=builder /app/docs ./docs
 
 # Устанавливаем зависимости
