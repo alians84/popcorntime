@@ -2,27 +2,20 @@ package auth
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"net/http"
+	"os"
+	"popcorntime-project/internal/api/auth"
+	"popcorntime-project/internal/middleware"
 )
 
-func SetupAuthRoutes(app *fiber.App) {
-	authGroup := app.Group("/auth")
+func SetupAuthRoutes(app *fiber.App, handler *auth.AuthHandler) {
+	authGroup := app.Group("api/auth")
+	{
+		authGroup.Post("/register", handler.Register)
+		authGroup.Post("/login", handler.Login)
+		authGroup.Post("/refresh", handler.Refresh)
 
-	authGroup.Get("/:provider", oauthLogin)
-	authGroup.Get("/:provider/callback", oauthCallback)
-}
-
-// @Summary Вход через OAuth провайдера
-// @Param provider path string true "google/github"
-// @Router /auth/{provider} [get]
-func oauthLogin(c *fiber.Ctx) error {
-	// Логика OAuth
-	return http.ErrAbortHandler
-}
-
-// @Summary Callback от OAuth провайдера
-// @Router /auth/{provider}/callback [get]
-func oauthCallback(c *fiber.Ctx) error {
-	// Логика обработки callback
-	return http.ErrAbortHandler
+		authGroup.Get("/profile", middleware.JWTProtected(os.Getenv("JWT_SECRET")), func(c *fiber.Ctx) error {
+			return nil
+		})
+	}
 }
