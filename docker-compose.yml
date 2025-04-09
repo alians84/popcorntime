@@ -31,7 +31,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root"]
+      test: ["CMD-SHELL", "pg_isready -U root -d popcorntime"]
       interval: 5s
       timeout: 5s
       retries: 5
