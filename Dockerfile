@@ -19,8 +19,6 @@ RUN apk add --no-cache curl && \
 # Копируем остальные файлы
 COPY . .
 
-# Генерируем Swagger документацию
-RUN swag init -g ./cmd/main.go --output ./docs --parseDependency --parseInternal --parseDepth 2
 
 # Собираем приложение
 RUN CGO_ENABLED=0 GOOS=linux go build -o /popcorntime ./cmd/
@@ -32,6 +30,10 @@ FROM alpine:latest
 COPY --from=builder /popcorntime .
 COPY --from=builder /app/docs ./docs
 COPY --from=builder /swagger-ui ./swagger-ui
+
+
+# Генерируем Swagger документацию
+RUN swag init -g ./cmd/main.go --output ./docs --parseDependency --parseInternal --parseDepth 2
 
 # Настраиваем права
 RUN chmod -R 755 /app/docs /app/swagger-ui
