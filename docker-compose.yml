@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   app:
+    volumes:
+      - ./swagger-ui:/app/swagger-ui:ro
     build: .
     expose:
       - "3000"
