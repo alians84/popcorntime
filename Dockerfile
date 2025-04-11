@@ -20,6 +20,7 @@ RUN apk add --no-cache curl && \
 COPY . .
 
 # Генерируем Swagger документацию
+WORKDIR /app
 RUN swag init -g ./cmd/main.go --output ./docs --parseDependency --parseInternal --parseDepth 2
 
 # Собираем приложение
@@ -27,8 +28,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /popcorntime ./cmd/
 
 # Финальная стадия
 FROM alpine:latest
-
-WORKDIR /app
 
 # Копируем бинарник и необходимые файлы
 COPY --from=builder /popcorntime .
