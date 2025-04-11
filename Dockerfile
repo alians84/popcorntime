@@ -20,7 +20,7 @@ RUN apk add --no-cache curl && \
 COPY . .
 
 # Генерируем Swagger документацию
-RUN swag init -g cmd/main.go --output docs --parseDependency --parseInternal --parseDepth 2
+RUN swag init -g /cmd/main.go --output ./docs --parseDependency --parseInternal --parseDepth 2
 
 # Собираем приложение
 RUN CGO_ENABLED=0 GOOS=linux go build -o /popcorntime ./cmd/
