@@ -20,6 +20,7 @@ RUN apk add --no-cache curl && \
 COPY . .
 
 # Генерируем Swagger документацию
+WORKDIR /app
 RUN swag init -g ./cmd/main.go --output ./docs --parseDependency --parseInternal --parseDepth 2
 
 # Собираем приложение
