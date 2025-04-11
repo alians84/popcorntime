@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build: .
-    ports:
+    expose:
       - "3000:3000"
     environment:
       - DB_HOST=postgres
@@ -42,6 +42,18 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - backend
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"  # Если нужен HTTPS
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Конфиг Nginx
+      - ./static:/var/www/html  # Статические файлы (опционально)
+    depends_on:
+      - app
     networks:
       - backend
 
