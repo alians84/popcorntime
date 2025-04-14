@@ -11,7 +11,7 @@ import (
 // @title PopcornTime API
 // @version 1.0
 // @description API для синхронизированного просмотра видео
-// @host localhost:3000
+// @host popcorntimes.ru
 // @BasePath /
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
