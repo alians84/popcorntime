@@ -5,16 +5,27 @@ CREATE TABLE roles (
                        permissions TEXT[] NOT NULL DEFAULT '{}'
 );
 
+-- Создание таблицы файлов
+CREATE TABLE files_s3 (
+                          id SERIAL PRIMARY KEY,
+                          file_url TEXT,
+                          created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+
 -- Создание таблицы пользователей
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
                        email VARCHAR(255) NOT NULL UNIQUE,
                        password_hash TEXT NOT NULL,
                        username TEXT NOT NULL UNIQUE,
-                       avatar_url TEXT,
+                       avatar_id INTEGER NULL,
                        role_id INTEGER NOT NULL REFERENCES roles(id) ON DELETE RESTRICT,
                        created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+  ALTER TABLE users ADD CONSTRAINT fk_avatar_id FOREIGN KEY (avatar_id)
+        REFERENCES files_s3(id)
+        ON DELETE RESTRICT;
 
 -- Создание таблицы видео-групп
 CREATE TABLE video_groups (
@@ -72,7 +83,9 @@ CREATE TABLE messages (
                           created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+
 -- Индексы для ускорения поиска
 CREATE INDEX idx_room_members_user ON room_members(user_id);
 CREATE INDEX idx_messages_room ON messages(room_id);
 CREATE INDEX idx_videos_group ON videos(group_id);
+CREATE INDEX idx_file_url ON files_s3(file_url);

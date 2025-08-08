@@ -23,6 +23,8 @@ func NewHandler(service users.Service) *Handler {
 // @Produce json
 // @Success 200 {object} models.User
 // @Failure 404 {object} map[string]string
+// @Security ApiKeyAuth
+// @scheme Bearer
 // @Router /api/users/{id} [get]
 func (h *Handler) GetUser(c *fiber.Ctx) error {
 	id, err := strconv.ParseUint(c.Params("id"), 10, 32)
@@ -40,4 +42,23 @@ func (h *Handler) GetUser(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(user)
+}
+
+// GetUsers godoc
+// @Summary Получить пользователей
+// @Description Получить информацию о пользователях
+// @Tags Users
+// @Produce json
+// @Success 200 {object} []models.User
+// @Failure 404 {object} map[string]string
+// @Router /api/users [get]
+func (h *Handler) GetUsers(c *fiber.Ctx) error {
+	getUsers, err := h.service.GetUsers()
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Users not found",
+		})
+	}
+
+	return c.JSON(getUsers)
 }

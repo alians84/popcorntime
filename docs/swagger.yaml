@@ -62,8 +62,8 @@ definitions:
     type: object
   popcorntime-project_internal_models.User:
     properties:
-      avatar_url:
-        type: string
+      avatar_id:
+        type: integer
       created_at:
         type: string
       email:
@@ -80,7 +80,7 @@ definitions:
   popcorntime-project_internal_models.UserResponse:
     properties:
       avatar_url:
-        type: string
+        type: integer
       created_at:
         type: string
       email:
@@ -205,6 +205,64 @@ paths:
               type: string
             type: object
       summary: Проверка здоровья сервера
+  /api/storages/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Загружает изображение в Backblaze B2 Cloud Storage
+      parameters:
+      - description: Файл изображения
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Загрузить изображение в B2 Cloud Storage
+      tags:
+      - Storages
+  /api/users:
+    get:
+      description: Получить информацию о пользователях
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/popcorntime-project_internal_models.User'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить пользователей
+      tags:
+      - Users
   /api/users/{id}:
     get:
       description: Получить информацию о пользователе по ID
@@ -227,6 +285,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Получить пользователя
       tags:
       - Users

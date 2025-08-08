@@ -32,7 +32,7 @@ func SetupFiber(cfg FiberConfig) *fiber.App {
 	app.Use(
 		helmet.New(), // Защита headers
 		cors.New(cors.Config{ // CORS для фронтенда
-			AllowOrigins:     "https://yourdomain.com, http://localhost:3000",
+			AllowOrigins:     "http://localhost:3000, http://127.0.0.1:3000, http://localhost:5173", // Добавлены популярные адреса для разработки
 			AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 			AllowHeaders:     "Origin,Content-Type,Accept,Authorization",
 			AllowCredentials: true,

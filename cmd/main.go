@@ -11,11 +11,14 @@ import (
 // @title PopcornTime API
 // @version 1.0
 // @description API для синхронизированного просмотра видео
-// @host popcorntimes.ru
+// @host localhost:3000
 // @BasePath /
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
+// @authorizationUrl
+// @tokenUrl /api/auth/login
+// @scheme Bearer
 func main() {
 	config.ConnectPostgres()
 	defer func() {
@@ -23,6 +26,11 @@ func main() {
 			sqlDB.Close() // Закрытие соединения при завершении
 		}
 	}()
+
+	newB2client, err := config.NewB2Client()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Конфигурация Fiber
 	fiberCfg := config.FiberConfig{
@@ -35,7 +43,7 @@ func main() {
 
 	app := config.SetupFiber(fiberCfg)
 
-	routes.SetupRoutes(app)
+	routes.SetupRoutes(app, newB2client)
 
 	// Запуск сервера
 	log.Fatal(app.Listen(":3000"))

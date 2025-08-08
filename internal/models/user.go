@@ -15,7 +15,7 @@ type User struct {
 	Email        string    `json:"email" gorm:"size:255;unique;not null"`
 	PasswordHash string    `json:"-" gorm:"type:text;not null"` // Пароль исключаем из JSON
 	Username     string    `json:"username" gorm:"type:text;unique;not null"`
-	AvatarURL    string    `json:"avatar_url,omitempty" gorm:"type:text"`
+	AvatarID     int       `json:"avatar_id,omitempty" gorm:"null"`
 	RoleID       int       `json:"role_id" gorm:"not null"`
 	Role         Role      `json:"role" gorm:"foreignKey:RoleID;constraint:OnDelete:RESTRICT"`
 	CreatedAt    time.Time `json:"created_at" gorm:"not null;default:now()"`
@@ -26,11 +26,14 @@ type UserResponse struct {
 	ID        int       `json:"id"`
 	Email     string    `json:"email"`
 	Username  string    `json:"username"`
-	AvatarURL string    `json:"avatar_url,omitempty"`
+	AvatarID  int       `json:"avatar_url,omitempty"`
 	Role      Role      `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type UsersResponse struct {
+	Users []UserResponse
+}
 type ErrorResponse struct {
 	Error   string `json:"error" example:"Invalid request body"`
 	Details string `json:"details,omitempty" example:"invalid character '}' looking for beginning of value"`
@@ -69,7 +72,7 @@ func (u *User) ToResponse() UserResponse {
 		ID:        u.ID,
 		Email:     u.Email,
 		Username:  u.Username,
-		AvatarURL: u.AvatarURL,
+		AvatarID:  u.AvatarID,
 		Role:      u.Role,
 		CreatedAt: u.CreatedAt,
 	}

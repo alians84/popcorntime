@@ -7,12 +7,14 @@ import (
 )
 
 const RoleDefault = 1
+const DefaultAvatar = 1
 
 type Service interface {
 	GetUser(id uint) (*models.User, error)
 	Register(email, password, username string) (*models.User, error)
 	Authenticate(email, password string) (*models.User, error)
 	GetUserByID(id uint) (*models.User, error)
+	GetUsers() ([]models.User, error)
 }
 
 type service struct {
@@ -32,6 +34,18 @@ func (u *service) GetUser(id uint) (*models.User, error) {
 	return &user, nil
 }
 
+func (u *service) GetUsers() ([]models.User, error) {
+	var users []models.User
+
+	result := u.db.Find(&users)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return users, nil
+}
+
 func (u *service) Register(email, password, username string) (*models.User, error) {
 	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
@@ -43,6 +57,7 @@ func (u *service) Register(email, password, username string) (*models.User, erro
 		PasswordHash: hashedPassword,
 		Username:     username,
 		RoleID:       RoleDefault,
+		AvatarID:     DefaultAvatar,
 	}
 
 	if err := u.db.Create(&user).Error; err != nil {
